@@ -106,3 +106,19 @@ class Measurement(Base):
 
     planet: Mapped[Planet] = relationship(back_populates="measurements")
     publication: Mapped[Optional[Publication]] = relationship(back_populates="measurements")
+
+
+class CatalogImportRun(Base):
+    """Audit record for a successful external catalog retrieval/import."""
+
+    __tablename__ = "catalog_import_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    source: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    retrieved_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    records_fetched: Mapped[int] = mapped_column(Integer, default=0)
+    records_inserted: Mapped[int] = mapped_column(Integer, default=0)
+    records_updated: Mapped[int] = mapped_column(Integer, default=0)
+    records_skipped: Mapped[int] = mapped_column(Integer, default=0)
+    status: Mapped[str] = mapped_column(String(40), default="completed")
