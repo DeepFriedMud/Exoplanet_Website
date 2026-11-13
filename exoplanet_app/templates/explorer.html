@@ -1,83 +1,83 @@
 {% extends "base.html" %}
 
-{% block title %}Exoplanet Explorer | Home{% endblock %}
+{% block title %}Exoplanet Explorer | Catalog{% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="page-header">
   <div>
-    <p class="eyebrow">Discovery dashboard</p>
-    <h1>Explore a catalog of worlds beyond our solar system.</h1>
-    <p class="subtitle">
-      Search, compare, and investigate the physical properties of exoplanets and their host stars.
-    </p>
-    {% if synthetic_data %}
-      <div class="alert-banner">
-        Synthetic demo data is enabled for local development. Replace with NASA archive ingestion in a production deployment.
-      </div>
-    {% endif %}
-    <div class="cta-row">
-      <a class="primary-btn" href="/explorer">Open Explorer</a>
-    </div>
+    <p class="eyebrow">Planet Explorer</p>
+    <h1>Search and compare the known exoplanet population.</h1>
   </div>
 </section>
 
-<section class="stats-grid">
-  <div class="stat-card">
-    <span>Total planets</span>
-    <strong>{{ stats.total_planets }}</strong>
+<section class="filters panel">
+  <div class="filter-grid">
+    <label>
+      Search
+      <input id="search-input" type="text" placeholder="Planet or host star" />
+    </label>
+    <label>
+      Discovery method
+      <select id="method-filter">
+        <option value="">Any</option>
+      </select>
+    </label>
+    <label>
+      Radius min (Rj)
+      <input id="radius-min" type="number" step="0.01" placeholder="0" />
+    </label>
+    <label>
+      Radius max (Rj)
+      <input id="radius-max" type="number" step="0.01" placeholder="2" />
+    </label>
+    <label>
+      Mass min (Mj)
+      <input id="mass-min" type="number" step="0.01" placeholder="0" />
+    </label>
+    <label>
+      Mass max (Mj)
+      <input id="mass-max" type="number" step="0.01" placeholder="5" />
+    </label>
+    <label>
+      Year min
+      <input id="year-min" type="number" step="1" placeholder="1995" />
+    </label>
+    <label>
+      Year max
+      <input id="year-max" type="number" step="1" placeholder="2025" />
+    </label>
   </div>
-  <div class="stat-card">
-    <span>Host stars</span>
-    <strong>{{ stats.total_hosts }}</strong>
-  </div>
-  <div class="stat-card">
-    <span>Multi-planet systems</span>
-    <strong>{{ stats.multi_planet_systems }}</strong>
-  </div>
-  <div class="stat-card">
-    <span>Confirmed planets</span>
-    <strong>{{ stats.confirmed_planets }}</strong>
+  <div class="button-row">
+    <button id="apply-filters" class="primary-btn">Apply filters</button>
+    <button id="reset-filters" class="ghost-btn">Reset</button>
   </div>
 </section>
 
-<section class="panel-grid">
-  <article class="panel panel-wide">
-    <h2>Discovery method distribution</h2>
-    <div id="method-chart"></div>
-  </article>
-
-  <article class="panel">
-    <h2>Population highlights</h2>
-    <ul class="bullets">
-      <li>{{ stats.confirmed_planets }} confirmed planets tracked.</li>
-      <li>{{ stats.candidate_planets }} candidate objects in the current dataset.</li>
-      <li>Sample values use a measurement provenance model that preserves uncertainties and original sources.</li>
-    </ul>
-  </article>
+<section class="panel">
+  <div id="results-meta" class="results-meta">Loading catalog...</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Planet</th>
+          <th>Host star</th>
+          <th>Method</th>
+          <th>Year</th>
+          <th>Period (d)</th>
+          <th>Radius (Rj)</th>
+          <th>Mass (Mj)</th>
+          <th>Teq (K)</th>
+        </tr>
+      </thead>
+      <tbody id="planet-table-body"></tbody>
+    </table>
+  </div>
+  <div class="pager">
+    <button id="prev-page" class="ghost-btn">Previous</button>
+    <span id="page-indicator">Page 1</span>
+    <button id="next-page" class="ghost-btn">Next</button>
+  </div>
 </section>
 
-<script>
-const stats = {{ stats | tojson }};
-const methodData = Object.entries(stats.discovery_methods || {});
-
-if (methodData.length > 0) {
-  const trace = {
-    type: 'pie',
-    labels: methodData.map(([label]) => label),
-    values: methodData.map(([, value]) => value),
-    hole: 0.3,
-    textinfo: 'label+percent',
-    marker: {
-      colors: ['#5eead4', '#7dd3fc', '#c4b5fd', '#fdba74', '#f9a8d4', '#86efac']
-    }
-  };
-
-  Plotly.newPlot('method-chart', [trace], {
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: 'transparent',
-    margin: { t: 10, r: 10, b: 10, l: 10 },
-    font: { color: '#e2e8f0' }
-  });
-}
-</script>
+<script src="/static/js/app.js"></script>
 {% endblock %}

@@ -1,83 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Exoplanet Explorer | Catalog{% endblock %}
+{% block title %}{{ planet.name }} | Exoplanet Explorer{% endblock %}
 
 {% block content %}
 <section class="page-header">
   <div>
-    <p class="eyebrow">Planet Explorer</p>
-    <h1>Search and compare the known exoplanet population.</h1>
+    <p class="eyebrow">Planet profile</p>
+    <h1>{{ planet.name }}</h1>
+    <p class="subtitle">{{ planet.system_name or 'Single-planet system' }} | {{ planet.host_star_name or 'Unknown host star' }}</p>
   </div>
 </section>
 
-<section class="filters panel">
-  <div class="filter-grid">
-    <label>
-      Search
-      <input id="search-input" type="text" placeholder="Planet or host star" />
-    </label>
-    <label>
-      Discovery method
-      <select id="method-filter">
-        <option value="">Any</option>
-      </select>
-    </label>
-    <label>
-      Radius min (Rj)
-      <input id="radius-min" type="number" step="0.01" placeholder="0" />
-    </label>
-    <label>
-      Radius max (Rj)
-      <input id="radius-max" type="number" step="0.01" placeholder="2" />
-    </label>
-    <label>
-      Mass min (Mj)
-      <input id="mass-min" type="number" step="0.01" placeholder="0" />
-    </label>
-    <label>
-      Mass max (Mj)
-      <input id="mass-max" type="number" step="0.01" placeholder="5" />
-    </label>
-    <label>
-      Year min
-      <input id="year-min" type="number" step="1" placeholder="1995" />
-    </label>
-    <label>
-      Year max
-      <input id="year-max" type="number" step="1" placeholder="2025" />
-    </label>
-  </div>
-  <div class="button-row">
-    <button id="apply-filters" class="primary-btn">Apply filters</button>
-    <button id="reset-filters" class="ghost-btn">Reset</button>
-  </div>
+<section class="stats-grid detail-grid">
+  <div class="stat-card"><span>Status</span><strong>{{ planet.discovery_status }}</strong></div>
+  <div class="stat-card"><span>Method</span><strong>{{ planet.discovery_method or 'Unknown' }}</strong></div>
+  <div class="stat-card"><span>Discovery year</span><strong>{{ planet.discovery_year or 'N/A' }}</strong></div>
+  <div class="stat-card"><span>Orbital period</span><strong>{{ planet.orbital_period_days or 'N/A' }} d</strong></div>
+  <div class="stat-card"><span>Radius</span><strong>{{ planet.radius_jupiter or 'N/A' }} Rj</strong></div>
+  <div class="stat-card"><span>Mass</span><strong>{{ planet.mass_jupiter or 'N/A' }} Mj</strong></div>
+  <div class="stat-card"><span>Equilibrium temp</span><strong>{{ planet.equilibrium_temperature_k or 'N/A' }} K</strong></div>
+  <div class="stat-card"><span>Semimajor axis</span><strong>{{ planet.semi_major_axis_au or 'N/A' }} AU</strong></div>
 </section>
 
 <section class="panel">
-  <div id="results-meta" class="results-meta">Loading catalog...</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Planet</th>
-          <th>Host star</th>
-          <th>Method</th>
-          <th>Year</th>
-          <th>Period (d)</th>
-          <th>Radius (Rj)</th>
-          <th>Mass (Mj)</th>
-          <th>Teq (K)</th>
-        </tr>
-      </thead>
-      <tbody id="planet-table-body"></tbody>
-    </table>
-  </div>
-  <div class="pager">
-    <button id="prev-page" class="ghost-btn">Previous</button>
-    <span id="page-indicator">Page 1</span>
-    <button id="next-page" class="ghost-btn">Next</button>
-  </div>
+  <h2>Measurement provenance</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Unit</th>
+        <th>Uncertainty</th>
+        <th>Method</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for measurement in planet.measurements %}
+      <tr>
+        <td>{{ measurement.parameter_name }}</td>
+        <td>{{ measurement.value or 'N/A' }}</td>
+        <td>{{ measurement.unit or '—' }}</td>
+        <td>
+          {% if measurement.lower_uncertainty or measurement.upper_uncertainty %}
+            {{ measurement.lower_uncertainty or '—' }} / {{ measurement.upper_uncertainty or '—' }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>{{ measurement.method or '—' }}</td>
+        <td>{{ measurement.source_catalog or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </section>
-
-<script src="/static/js/app.js"></script>
 {% endblock %}
