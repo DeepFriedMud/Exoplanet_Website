@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Exoplanet Explorer | Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Discovery dashboard</p>
+    <h1>Explore a catalog of worlds beyond our solar system.</h1>
+    <p class="subtitle">
+      Search, compare, and investigate the physical properties of exoplanets and their host stars.
+    </p>
+    {% if synthetic_data %}
+      <div class="alert-banner">
+        Synthetic demo data is enabled for local development. Replace with NASA archive ingestion in a production deployment.
+      </div>
+    {% endif %}
+    <div class="cta-row">
+      <a class="primary-btn" href="/explorer">Open Explorer</a>
+    </div>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <div class="stat-card">
+    <span>Total planets</span>
+    <strong>{{ stats.total_planets }}</strong>
+  </div>
+  <div class="stat-card">
+    <span>Host stars</span>
+    <strong>{{ stats.total_hosts }}</strong>
+  </div>
+  <div class="stat-card">
+    <span>Multi-planet systems</span>
+    <strong>{{ stats.multi_planet_systems }}</strong>
+  </div>
+  <div class="stat-card">
+    <span>Confirmed planets</span>
+    <strong>{{ stats.confirmed_planets }}</strong>
+  </div>
+</section>
+
+<section class="panel-grid">
+  <article class="panel panel-wide">
+    <h2>Discovery method distribution</h2>
+    <div id="method-chart"></div>
+  </article>
+
+  <article class="panel">
+    <h2>Population highlights</h2>
+    <ul class="bullets">
+      <li>{{ stats.confirmed_planets }} confirmed planets tracked.</li>
+      <li>{{ stats.candidate_planets }} candidate objects in the current dataset.</li>
+      <li>Sample values use a measurement provenance model that preserves uncertainties and original sources.</li>
+    </ul>
+  </article>
+</section>
+
+<script>
+const stats = {{ stats | tojson }};
+const methodData = Object.entries(stats.discovery_methods || {});
+
+if (methodData.length > 0) {
+  const trace = {
+    type: 'pie',
+    labels: methodData.map(([label]) => label),
+    values: methodData.map(([, value]) => value),
+    hole: 0.3,
+    textinfo: 'label+percent',
+    marker: {
+      colors: ['#5eead4', '#7dd3fc', '#c4b5fd', '#fdba74', '#f9a8d4', '#86efac']
+    }
+  };
+
+  Plotly.newPlot('method-chart', [trace], {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    margin: { t: 10, r: 10, b: 10, l: 10 },
+    font: { color: '#e2e8f0' }
+  });
+}
+</script>
+{% endblock %}

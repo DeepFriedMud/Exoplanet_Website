@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ planet.name }} | Exoplanet Explorer{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Planet profile</p>
+    <h1>{{ planet.name }}</h1>
+    <p class="subtitle">{{ planet.system_name or 'Single-planet system' }} | {{ planet.host_star_name or 'Unknown host star' }}</p>
+  </div>
+</section>
+
+<section class="stats-grid detail-grid">
+  <div class="stat-card"><span>Status</span><strong>{{ planet.discovery_status }}</strong></div>
+  <div class="stat-card"><span>Method</span><strong>{{ planet.discovery_method or 'Unknown' }}</strong></div>
+  <div class="stat-card"><span>Discovery year</span><strong>{{ planet.discovery_year or 'N/A' }}</strong></div>
+  <div class="stat-card"><span>Orbital period</span><strong>{{ planet.orbital_period_days or 'N/A' }} d</strong></div>
+  <div class="stat-card"><span>Radius</span><strong>{{ planet.radius_jupiter or 'N/A' }} Rj</strong></div>
+  <div class="stat-card"><span>Mass</span><strong>{{ planet.mass_jupiter or 'N/A' }} Mj</strong></div>
+  <div class="stat-card"><span>Equilibrium temp</span><strong>{{ planet.equilibrium_temperature_k or 'N/A' }} K</strong></div>
+  <div class="stat-card"><span>Semimajor axis</span><strong>{{ planet.semi_major_axis_au or 'N/A' }} AU</strong></div>
+</section>
+
+<section class="panel">
+  <h2>Measurement provenance</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Unit</th>
+        <th>Uncertainty</th>
+        <th>Method</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for measurement in planet.measurements %}
+      <tr>
+        <td>{{ measurement.parameter_name }}</td>
+        <td>{{ measurement.value or 'N/A' }}</td>
+        <td>{{ measurement.unit or '—' }}</td>
+        <td>
+          {% if measurement.lower_uncertainty or measurement.upper_uncertainty %}
+            {{ measurement.lower_uncertainty or '—' }} / {{ measurement.upper_uncertainty or '—' }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>{{ measurement.method or '—' }}</td>
+        <td>{{ measurement.source_catalog or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

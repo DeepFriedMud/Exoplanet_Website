@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Exoplanet Explorer{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-block">
+        <a href="/" class="brand">Exoplanet Explorer</a>
+      </div>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/explorer">Planet Explorer</a>
+      </nav>
+    </header>
+    <main class="page-shell">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
